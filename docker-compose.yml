@@ -1,31 +1,23 @@
 services:
-  web:
-    image: jenkins/jenkins:lts-jdk17
+  jenkins-master:
+    image: jenkins/jenkins:alpine3.21-jdk21
     container_name: jenkins-master
-    environment:
-      DOCKER_HOST: tcp://docker:2376 
-      DOCKER_CERT_PATH: certs/client
-      DOCKER_TLS_VERIFY: 1
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
+      # Removed /var/run/docker.sock and /usr/bin/docker
       - ./volumes/jenkins-master:/var/jenkins_home:rw
-      # - ./volumes/jenkins-docker-certs:/certs/client:ro
     ports:
       - 8080:8080
       - 50000:50000
     networks:
       - jenkins-network
 
-  jenkins_slave:
-    image: jenkins/slave:4.13.3-2-alpine
-    container_name: jnlp_slave
-    # command: -url http://jenkins-master:8080 $JENKINS_SECRET $JENKINS_AGENT_NAME
-    # restart: always
+  jenkins-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jenkins-agent
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
-      - ./volumes/jnlp_slave:/var/jenkins_home
+      - ./volumes/inbound-agent:/var/jenkins_home
     environment:
       JENKINS_URL: ${JENKINS_URL}
       JENKINS_SECRET: ${JENKINS_SECRET}
@@ -39,3 +31,7 @@ networks:
   jenkins-network:
     driver: bridge
     name: jenkins-network
+
+
+# curl -sO http://172.18.0.1:8080/jnlpJars/agent.jar
+# java -jar agent.jar -url http://172.18.0.1:8080/ -secret c3aa266dd274d7b33756be3b2c23ffd9cdff099190c9c2f34aee299a2c28e445 -name "jenkins-inbound-agent-1" -webSocket -workDir "/home/jenkins"

@@ -13,3 +13,5 @@ add JENKINS_SECRET and JENKINS_AGENT_NAME vars
 - JCasC
 - vault
 - github
+- terraform
+- ansible
