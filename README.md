@@ -1,13 +1,13 @@
-# jenkins
-my repo for jenkins in docker
-
-# Permission issue
-workaround chmod -R 777 volumes/
-need to find a more secure solution
+# Jenkins
+Setup jenkins in docker
 
 # Set environment
 create a .env file
-add JENKINS_SECRET and JENKINS_AGENT_NAME vars
+'''
+JENKINS_URL=http://jenkins-master:8080
+JENKINS_SECRET={{ your-jenkins-secret }}
+JENKINS_AGENT_NAME=jenkins-agent
+'''
 
 # Plungins
 - JCasC
@@ -15,3 +15,8 @@ add JENKINS_SECRET and JENKINS_AGENT_NAME vars
 - github
 - terraform
 - ansible
+
+# Execute
+'''
+sudo docker compose up -d
+'''
